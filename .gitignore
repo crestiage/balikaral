@@ -25,3 +25,4 @@ obj/
 Library/
 
 balikaral.sln
+*.csproj
