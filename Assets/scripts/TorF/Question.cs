@@ -14,6 +14,8 @@ public class QuestionDTO
     public string question;
     public string correctAns;
 
+    public int questionScoreValue = 1;
+
     public Boolean isAnswered = false;
     public Boolean isAnsweredCorrectly = false;
 }
@@ -24,13 +26,20 @@ public class Question : MonoBehaviour
     public string fact;
     public bool isTrue;
 
+    public Image summaryPanel;
+    public Text summaryPanelTitleText;
+    public Text summaryPanelScoreText;
+    public Button summaryPanelTryAgainBtn;
+    public Button summaryPanelReturnToMMButton;
+
+
     public Text questionBox;
     public Button tamaButton;
     public Button maliButton;
-
+        
     GameObject questionPanel;
     
-    public QuestionDTO[] questionDtoArr;
+    private QuestionDTO[] questionDtoArr;
 
     private int currentQuestionNumber = 0;
 
@@ -43,6 +52,7 @@ public class Question : MonoBehaviour
         Debug.Log("start called");
         tamaButton.onClick.AddListener(trueBtnOnClick);
         maliButton.onClick.AddListener(falseBtnOnClick);
+        summaryPanelTryAgainBtn.onClick.AddListener(summaryPanelTryAgainBtnOnClick);
     }
 
     void OnEnable()
@@ -56,11 +66,12 @@ public class Question : MonoBehaviour
     {
         // string requestResult;
         // requestResult = wrh.fetchWebDataString(tamaOMaliURL);
-        fetchQuestions();
+        fetchAndResetQuestions();
     }
 
-    public void fetchQuestions()
+    public void fetchAndResetQuestions()
     {
+        currentQuestionNumber = 0;
         wrh.fetchWebDataString(tamaOMaliURL, processQuestionDTO);
     }
 
@@ -86,19 +97,19 @@ public class Question : MonoBehaviour
         }else if (currentQuestionNumber >= arrLength)
         {
             // Summary page
+            summarize();
+            displaySummaryPanel(true);
         }
     }
 
     private void trueBtnOnClick()
     {
         scoreAnswer(true);
-        nextQuestion();
     }
 
     private void falseBtnOnClick()
     {
         scoreAnswer(false);
-        nextQuestion();
     }
 
     private void scoreAnswer(bool trueOrFalse)
@@ -110,12 +121,57 @@ public class Question : MonoBehaviour
         {
             QuestionDTO questionDto = questionDtoArr[currentQuestion];
             String correctAnswer = questionDto.correctAns;
+            questionDtoArr[currentQuestion].isAnswered = true;
             questionDtoArr[currentQuestion].isAnsweredCorrectly = (
                     (trueOrFalse && correctAnswer.Equals("1")) || (!trueOrFalse && correctAnswer.Equals("0"))
                 ) ? true : false;
 
             Debug.Log(String.Format("Question #{0} has been aswered {1}", (currentQuestion), (questionDtoArr[currentQuestion].isAnsweredCorrectly) ? "correctly" : "incorrectly"));
+
+            // End the game if a wrong answer has been selected
+            if (!questionDtoArr[currentQuestion].isAnsweredCorrectly)
+            {
+                summarize();
+                summaryPanelTitleText.text = "Game Over";
+                displaySummaryPanel(true);
+            }
+            else
+            {
+                nextQuestion();
+            }
         }
+    }
+
+    private void summarize()
+    {
+        int totalScore = 0;
+        foreach (QuestionDTO qdto in questionDtoArr)
+        {
+            if (qdto.isAnswered && qdto.isAnsweredCorrectly)
+            {
+                totalScore += qdto.questionScoreValue;
+            } 
+        }
+
+        summaryPanelScoreText.text = totalScore.ToString();
+    }
+
+    private void displaySummaryPanel(bool show)
+    {
+        if (show)
+        {
+            summaryPanel.gameObject.SetActive(true);
+        }
+        else
+        {
+            summaryPanel.gameObject.SetActive(false);
+        }
+    }
+
+    private void summaryPanelTryAgainBtnOnClick()
+    {
+        displaySummaryPanel(false);
+        fetchAndResetQuestions();
     }
 
     /*private IEnumerator fetchQuestions(string uri)
