@@ -104,15 +104,17 @@ public class Question : MonoBehaviour
     private void scoreAnswer(bool trueOrFalse)
     {
         int arrLength = questionDtoArr.Length;
-        if (arrLength > 0 && currentQuestionNumber < arrLength)
+        // Subtract 1 because the nextQuestion is called advanced
+        int currentQuestion = currentQuestionNumber - 1;
+        if (arrLength > 0 && currentQuestion < arrLength)
         {
-            QuestionDTO questionDto = questionDtoArr[currentQuestionNumber];
+            QuestionDTO questionDto = questionDtoArr[currentQuestion];
             String correctAnswer = questionDto.correctAns;
-            questionDtoArr[currentQuestionNumber].isAnsweredCorrectly = (
+            questionDtoArr[currentQuestion].isAnsweredCorrectly = (
                     (trueOrFalse && correctAnswer.Equals("1")) || (!trueOrFalse && correctAnswer.Equals("0"))
                 ) ? true : false;
 
-            Debug.Log(String.Format("Question #{0} has been aswered {1}", (currentQuestionNumber), (questionDtoArr[currentQuestionNumber].isAnsweredCorrectly) ? "correctly" : "incorrectly"));
+            Debug.Log(String.Format("Question #{0} has been aswered {1}", (currentQuestion), (questionDtoArr[currentQuestion].isAnsweredCorrectly) ? "correctly" : "incorrectly"));
         }
     }
 
