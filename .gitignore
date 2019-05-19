@@ -1,3 +1,4 @@
+\.vs/
 
 \.vs/Customization Scene/DesignTimeBuild/\.dtbcache
 
@@ -16,3 +17,11 @@ Assembly-CSharp-Editor\.csproj
 Assembly-CSharp\.csproj
 
 Customization Scene\.sln
+
+Temp/
+
+obj/
+
+Library/
+
+balikaral.sln
